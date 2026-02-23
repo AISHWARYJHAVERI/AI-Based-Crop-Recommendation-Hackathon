@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crop Recommendation | Krishi AI</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="/static/css/index.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #e8f5e9 0%, #ffffff 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+
+        .back-home {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: transform 0.3s;
+        }
+
+        .back-home:hover {
+            transform: translateX(-5px);
+        }
+
+        .recommend-container {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 40px;
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 8px 32px rgba(46, 125, 50, 0.1);
+            width: 100%;
+            max-width: 700px;
+        }
+
+        h1 {
+            color: var(--dark);
+            font-size: 2.2rem;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .search-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr auto;
+            gap: 15px;
+            margin-bottom: 30px;
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-light);
+            text-transform: uppercase;
+        }
+
+        input {
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+            font-family: var(--font-body);
+        }
+
+        .btn-search {
+            height: 45px;
+            align-self: flex-end;
+            padding: 0 25px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-search:hover {
+            background: var(--dark);
+            transform: scale(1.05);
+        }
+
+        .results-section {
+            margin-top: 30px;
+        }
+
+        .crop-card {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border-left: 6px solid var(--primary);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s;
+        }
+
+        .crop-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .crop-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .crop-name {
+            font-size: 1.5rem;
+            color: var(--dark);
+            font-weight: 700;
+        }
+
+        .soil-badge {
+            background: var(--light);
+            color: var(--primary);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .data-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .data-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .data-item i {
+            color: var(--primary);
+            width: 20px;
+        }
+
+        .data-label {
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+
+        .data-value {
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .predict-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1rem;
+            background: #e8f5e9;
+            padding: 10px 20px;
+            border-radius: 30px;
+            transition: all 0.3s;
+        }
+
+        .predict-link:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .error-msg {
+            background: #ffebee;
+            color: #d32f2f;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 5px solid #d32f2f;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <a href="/home" class="back-home">
+        <i class="fa-solid fa-arrow-left"></i> Back to Home
+    </a>
+
+    <div class="recommend-container">
+        <h1><i class="fa-solid fa-wand-magic-sparkles"></i> Crop Smart Suggest</h1>
+
+        <form class="search-form" action="/get_recommendation" method="POST">
+            <div class="form-group">
+                <label for="state">In State</label>
+                <input type="text" id="state" name="state" placeholder="e.g. Punjab" value="{{ state or '' }}">
+            </div>
+            <div class="form-group">
+                <label for="soil">Or Soil Type</label>
+                <input type="text" id="soil" name="soil" placeholder="e.g. Alluvial" value="{{ soil or '' }}">
+            </div>
+            <button type="submit" class="btn-search"><i class="fa-solid fa-magnifying-glass"></i></button>
+        </form>
+
+        {% if error %}
+        <div class="error-msg">
+            <i class="fa-solid fa-triangle-exclamation"></i> {{ error }}
+        </div>
+        {% endif %}
+
+        {% if results %}
+        <div class="results-section">
+            <h3 style="color: var(--dark); margin-bottom: 20px;">Recommended for You:</h3>
+            {% for res in results %}
+            <div class="crop-card">
+                <div class="crop-header">
+                    <span class="crop-name">{{ res.crop }}</span>
+                    <span class="soil-badge">{{ res.soil }}</span>
+                </div>
+
+                <p style="color: var(--text-light); font-size: 0.95rem; margin-bottom: 20px;">
+                    {{ res.desc }}
+                </p>
+
+                <div class="data-grid">
+                    <div class="data-item">
+                        <i class="fa-solid fa-flask"></i>
+                        <div>
+                            <span class="data-label">Optimal pH:</span>
+                            <span class="data-value">{{ res.ph }}</span>
+                        </div>
+                    </div>
+                    <div class="data-item">
+                        <i class="fa-solid fa-vial"></i>
+                        <div>
+                            <span class="data-label">NPK Ratio:</span>
+                            <span class="data-value">{{ res.npk }}</span>
+                        </div>
+                    </div>
+                    <div class="data-item">
+                        <i class="fa-solid fa-chart-line"></i>
+                        <div>
+                            <span class="data-label">Avg Potential Yield:</span>
+                            <span class="data-value">{{ res.potential_yield }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <a href="/yield?crop={{ res.crop }}&location={{ res.state }}" class="predict-link">
+                    Predict Yield for this Crop <i class="fa-solid fa-chevron-right"></i>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+</body>
+
+</html>

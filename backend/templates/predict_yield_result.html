@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yield Result | Krishi AI</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="/static/css/index.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #e8f5e9 0%, #ffffff 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            font-family: var(--font-body);
+        }
+
+        .result-container {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 50px;
+            border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 15px 40px rgba(46, 125, 50, 0.1);
+            width: 100%;
+            max-width: 800px;
+            text-align: center;
+        }
+
+        .header {
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            color: var(--dark);
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: var(--text-light);
+            font-size: 1.1rem;
+        }
+
+        .main-result {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            margin-bottom: 40px;
+            border-left: 8px solid var(--primary);
+        }
+
+        .yield-val {
+            font-size: 4rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin: 10px 0;
+            display: block;
+        }
+
+        .yield-label {
+            font-size: 1.2rem;
+            color: var(--dark);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .category-badge {
+            display: inline-block;
+            padding: 8px 24px;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            margin-top: 15px;
+        }
+
+        .category-Exceptional {
+            background: #E8F5E9;
+            color: #2E7D32;
+            border: 1px solid #2E7D32;
+        }
+
+        .category-High {
+            background: #E3F2FD;
+            color: #1976D2;
+            border: 1px solid #1976D2;
+        }
+
+        .category-Moderate {
+            background: #FFF3E0;
+            color: #F57C00;
+            border: 1px solid #F57C00;
+        }
+
+        .category-Low {
+            background: #FFEBEE;
+            color: #D32F2F;
+            border: 1px solid #D32F2F;
+        }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .detail-card {
+            background: rgba(255, 255, 255, 0.5);
+            padding: 20px;
+            border-radius: 15px;
+            text-align: left;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .detail-card i {
+            font-size: 1.5rem;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .detail-card h4 {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            margin-bottom: 5px;
+        }
+
+        .detail-card p {
+            font-size: 1.1rem;
+            color: var(--dark);
+            font-weight: 600;
+        }
+
+        .actions {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 12px rgba(46, 125, 50, 0.3);
+        }
+
+        .btn-primary:hover {
+            background: var(--dark);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--text-main);
+            border: 1px solid #ddd;
+        }
+
+        .btn-secondary:hover {
+            background: #f5f5f5;
+            transform: translateY(-2px);
+        }
+
+        .weather-panel {
+            background: linear-gradient(to right, #2E7D32, #1B5E20);
+            color: white;
+            padding: 25px;
+            border-radius: 20px;
+            margin-bottom: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            text-align: left;
+        }
+
+        .weather-info h3 {
+            color: var(--accent);
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="result-container">
+        <div class="header">
+            <h1><i class="fa-solid fa-chart-line"></i> Yield Report</h1>
+            <p>Analysis for {{ crop_type }} in {{ location }} ({{ season }})</p>
+        </div>
+
+        <div class="main-result">
+            <span class="yield-label">Total Estimated Yield</span>
+            <span class="yield-val">{{ predicted_yield }} Tonnes</span>
+            <div class="category-badge category-{{ category }}">
+                {{ category }} Potential
+            </div>
+            <p style="margin-top: 15px; color: var(--text-light);">Based on {{ land_area }} acres of land.</p>
+        </div>
+
+        {% if weather %}
+        <div class="weather-panel">
+            <div class="weather-info">
+                <h3><i class="fa-solid fa-cloud-sun"></i> Current Weather</h3>
+                <p>{{ weather.desc }}, {{ weather.temp }}°C</p>
+                <p><small>{{ weather.location }}</small></p>
+            </div>
+            <div style="font-size: 2.5rem;">
+                <i class="fa-solid fa-temperature-half"></i>
+            </div>
+            <div class="weather-details">
+                <p><i class="fa-solid fa-droplet"></i> {{ weather.humidity }}% Humid</p>
+                <p><i class="fa-solid fa-wind"></i> {{ weather.wind }} km/h</p>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="details-grid">
+            <div class="detail-card">
+                <i class="fa-solid fa-seedling"></i>
+                <h4>Yield Per Acre</h4>
+                <p>{{ yield_per_acre }} Tonnes</p>
+            </div>
+            <div class="detail-card">
+                <i class="fa-solid fa-vial"></i>
+                <h4>Nutrition (NPK)</h4>
+                <p>{{ npk }}</p>
+            </div>
+            <div class="detail-card">
+                <i class="fa-solid fa-flask"></i>
+                <h4>Soil Health</h4>
+                <p>pH {{ soil_ph }}</p>
+            </div>
+        </div>
+
+        <div style="margin-top: 40px; border-top: 1px solid rgba(0,0,0,0.1); padding-top: 30px;">
+            <h3 style="color: var(--dark); margin-bottom: 20px;"><i class="fa-solid fa-vial-circle-check"></i> Soil
+                Analysis & Treatment</h3>
+
+            <div class="detail-card"
+                style="background: rgba(46, 125, 50, 0.05); margin-bottom: 20px; width: 100%; text-align: left;">
+                <h4 style="color: var(--primary);">Status: {{ treatment.status }}</h4>
+                {% if treatment.warning %}
+                <p style="color: #d32f2f; font-weight: 500; margin: 10px 0;"><i
+                        class="fa-solid fa-triangle-exclamation"></i> {{ treatment.warning }}</p>
+                {% endif %}
+                <p style="margin: 10px 0;"><strong>Recommendation:</strong> {{ treatment.recommendation }}</p>
+
+                {% if treatment.materials %}
+                <div style="margin-top: 15px;">
+                    <p style="font-weight: 600; margin-bottom: 10px;">Suggested Treatment (for {{ land_area }} acres):
+                    </p>
+                    <ul style="list-style: none; padding: 0;">
+                        {% for item in treatment.materials %}
+                        <li
+                            style="background: white; padding: 8px 15px; border-radius: 8px; margin-bottom: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); display: flex; justify-content: space-between;">
+                            <span>{{ item.name }}</span>
+                            <span style="font-weight: bold; color: var(--primary);">{{ item.amount }} {{ item.unit
+                                }}</span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div style="margin-top: 40px; border-top: 1px solid rgba(0,0,0,0.1); padding-top: 30px;">
+            <h3 style="color: var(--dark); margin-bottom: 20px;"><i class="fa-solid fa-brain"></i> Machine Learning
+                Insights</h3>
+            <div class="details-grid" style="margin-bottom: 20px;">
+                <div class="detail-card" style="background: rgba(46, 125, 50, 0.05);">
+                    <h4>Model Accuracy (R²)</h4>
+                    <p>{{ metrics.r2 }}</p>
+                </div>
+                <div class="detail-card" style="background: rgba(46, 125, 50, 0.05);">
+                    <h4>Prediction Error (MSE)</h4>
+                    <p>{{ metrics.mse }}</p>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 20px; flex-wrap: wrap; justify-content: center;">
+                <div
+                    style="flex: 1; min-width: 300px; background: white; padding: 15px; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+                    <p style="font-size: 0.8rem; color: var(--text-light); margin-bottom: 5px;">Model Feature Importance
+                        Analysis
+                    </p>
+                    <img src="/static/plots/feature_importance.png" alt="Feature Importance"
+                        style="width: 100%; border-radius: 10px;">
+                </div>
+                <div
+                    style="flex: 1; min-width: 300px; background: white; padding: 15px; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+                    <p style="font-size: 0.8rem; color: var(--text-light); margin-bottom: 5px;">Actual vs Predicted
+                        Comparison</p>
+                    <img src="/static/plots/actual_vs_predicted.png" alt="Actual vs Predicted"
+                        style="width: 100%; border-radius: 10px;">
+                </div>
+            </div>
+        </div>
+
+        <div class="actions">
+            <a href="/yield" class="btn btn-secondary">
+                <i class="fa-solid fa-arrow-left"></i> Analyze Different Area
+            </a>
+            <a href="/home" class="btn btn-primary">
+                <i class="fa-solid fa-house"></i> Back to Dashboard
+            </a>
+        </div>
+    </div>
+</body>
+
+</html>

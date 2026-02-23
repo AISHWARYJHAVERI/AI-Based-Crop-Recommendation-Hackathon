@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="/static/css/login_style.css">
+    <title>Login | AI Based Crop Recommendation</title>
+</head>
+
+<body>
+
+    <div class="container" id="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="flash-messages"
+            style="position: absolute; top: 20px; z-index: 1000; width: 100%; text-align: center;">
+            {% for category, message in messages %}
+            <div class="alert alert-{{ category }}"
+                style="background: #ffcccc; color: #cc0000; padding: 10px; border-radius: 5px; display: inline-block; margin-bottom: 10px;">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+        <div class="form-container sign-up">
+            <form action="/register" method="POST">
+                <h1>Create Account</h1>
+                <div class="social-icons">
+                    <a href="javascript:void(0)" class="icon social-google"><i class="fa-brands fa-google"></i></a>
+                    <a href="javascript:void(0)" class="icon social-facebook"><i
+                            class="fa-brands fa-facebook-f"></i></a>
+                    <a href="javascript:void(0)" class="icon social-instagram"><i
+                            class="fa-brands fa-instagram"></i></a>
+                </div>
+                <span>or use your email for registration</span>
+                <input type="text" name="name" placeholder="Full Name" required>
+                <input type="email" name="email" placeholder="Email Address" required>
+                <input type="password" name="password" placeholder="Password" required>
+                <button type="submit">Sign Up</button>
+                <p class="mobile-only">Already have an account? <a href="javascript:void(0)" id="mobile-login">Sign
+                        In</a></p>
+            </form>
+        </div>
+        <div class="form-container sign-in">
+            <form action="/login" method="POST" id="loginForm">
+                <h1>Sign In</h1>
+                <div class="social-icons">
+                    <a href="javascript:void(0)" class="icon social-google"><i class="fa-brands fa-google"></i></a>
+                    <a href="javascript:void(0)" class="icon social-facebook"><i
+                            class="fa-brands fa-facebook-f"></i></a>
+                    <a href="javascript:void(0)" class="icon social-instagram"><i
+                            class="fa-brands fa-instagram"></i></a>
+                </div>
+                <span>or use your email and password</span>
+                <input type="email" name="email" id="email" placeholder="Email Address" required>
+                <input type="password" name="password" id="password" placeholder="Password" required>
+                <a href="#">Forgot Your Password?</a>
+                <button type="submit">Sign In</button>
+                <p class="mobile-only">Don't have an account? <a href="javascript:void(0)" id="mobile-register">Sign
+                        Up</a></p>
+            </form>
+        </div>
+        <div class="toggle-container">
+            <div class="toggle">
+                <div class="toggle-panel toggle-left">
+                    <h1>Welcome Back!</h1>
+                    <p>Access your personalized farm insights and crop data.</p>
+                    <button class="hidden" id="login">Sign In</button>
+                </div>
+                <div class="toggle-panel toggle-right">
+                    <h1>Grow With Us!</h1>
+                    <p>Join our community of smart farmers and start maximizing your yield today.</p>
+                    <button class="hidden" id="register">Sign Up</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/login_script.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,6 @@
+flask
+requests
+numpy
+torch
+transformers
+scikit-learn
